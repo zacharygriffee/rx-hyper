@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body>
+<script type="importmap">
+        {
+            "imports": {
+                "brittle": "https://esm.run/brittle",
+                "cenc": "https://esm.run/compact-encoding",
+                "takeSync": "./lib/takeSync.js",
+                "awilix": "https://cdn.jsdelivr.net/npm/awilix@10.0.1/lib/awilix.browser.js/+esm"
+            }
+        }
+
+</script>
+<script type="module">
+    import {test, solo, skip} from "brittle";
+    import * as RXHYPER from "./index.js";
+    import * as Awilix from "awilix";
+
+    // Set your own dependency source.
+    RXHYPER.configuration.dependencies.awilix = {
+        get() {
+            return Awilix
+        }
+    };
+    const mainContainer = await RXHYPER.install();
+    const coreContainer = await RXHYPER.RxCore.install();
+    const corestoreContainer = await RXHYPER.RxCorestore.install();
+    const {rx} = mainContainer.cradle;
+    test("extend functionality", async t => {
+        // Create extension to the corestoreContainer
+        corestoreContainer.register({
+            extension$: Awilix.asFunction(({rx}) => rx.from(["hello", "world"])).scoped()
+        });
+
+        const rxCorestore = RXHYPER.RxCorestore.create();
+        let extensionResult = [];
+
+        rxCorestore.extension$.subscribe(
+            (o) => extensionResult.push(o)
+        );
+
+        t.is(extensionResult.join(","), ["hello", "world"].join(","));
+        const rxCore = rxCorestore.get({name: "power"});
+        t.ok(rxCore.isRxCore);
+        t.teardown(() => rxCore.close());
+    });
+
+    test("basic tests", async t => {
+        const core1 = RXHYPER.RxCore.create({valueEncoding: "json"});
+        await core1.append("hello");
+        t.is(await core1.get(0), "hello");
+        t.is(await rx.firstValueFrom(core1.get$(0)), "hello");
+        await core1.close();
+        await t.exception(() => core1.get(0));
+    });
+
+    test("concat appends, create read stream, and create a session core", async t => {
+        t.plan(5);
+        const core = RXHYPER.RxCore.create({valueEncoding: "json"});
+        const coreSession = core.session({valueEncoding: "json"});
+        rx.concat(
+            core.append$(() => rx.of("hello")).pipe(rx.repeat(4)),
+            core.append$(() => rx.of("world")).pipe(rx.repeat(4))
+        ).subscribe({
+            complete() {
+                coreSession.createReadStream$().pipe(rx.takeLast(2)).subscribe(
+                    {
+                        next(o) {
+                            t.is(o, "world");
+                        }
+                    }
+                );
+            }
+        });
+
+        core.createReadStream$({live: true}).pipe(rx.take(3)).subscribe(
+            o => t.is(o, "hello")
+        );
+
+        t.teardown(async () => {
+            await core.close();
+            await coreSession.close();
+        });
+    });
+
+    test("merge core appends", t => {
+        t.plan(20);
+        const core = RXHYPER.RxCore.create({valueEncoding: "json"});
+        rx.merge(
+            core.append$(() => rx.of("hello")).pipe(rx.repeat(4)),
+            core.append$(() => rx.of("world")).pipe(rx.repeat(4))
+        ).subscribe({
+            next(result) {
+                t.ok(result.value === "hello" || result.value === "world");
+            },
+            complete() {
+                core.createReadStream$().pipe(rx.take(8)).subscribe(
+                    o => t.ok(o === "hello" || o === "world")
+                );
+            }
+        });
+
+        core.createReadStream$({live: true}).pipe(rx.take(4)).subscribe(
+            o => {
+                t.ok(o === "hello" || o === "world");
+            }
+        );
+
+        t.teardown(async () => {
+            await core.close();
+        });
+    });
+
+    test("corestore", async t => {
+        t.plan(1);
+        const corestore = RXHYPER.RxCorestore.create();
+        const results = [];
+        const correctResults = ["sriracha", "louisiana", "spicy", "goldens"].join(",");
+        rx.concat(
+            corestore.get$({name: "hotsauce", valueEncoding: "json"}),
+            corestore.get$({name: "mustard", valueEncoding: "json"})
+        ).pipe(
+            rx.concatMap(
+                (core, i) => {
+                    return core.append$(i === 0 ? ["sriracha", "louisiana"] : ["spicy", "goldens"])
+                        .pipe(
+                            rx.map(() => core)
+                        );
+                }
+            ),
+            rx.toArray(),
+            rx.switchMap(
+                ([hot, mustard]) => {
+                    return rx.concat(
+                        hot.get$(0),
+                        hot.get$(1),
+                        mustard.get$(0),
+                        mustard.get$(1)
+                    )
+                }
+            )
+        ).subscribe(
+            {
+                async next(o) {
+                    results.push(o);
+                },
+                async complete() {
+                    t.is(results.join(","), correctResults);
+                },
+                error(e) {
+                    t.fail();
+                }
+            }
+        );
+
+        t.teardown(() => corestore.close());
+    });
+
+    test("Test Complete", async t => {
+        const [bodyEle] = document.getElementsByTagName("body");
+        bodyEle.style.backgroundColor = "green";
+        t.pass();
+    });
+</script>
+<h1>Testing</h1>
+<h2>Background will go green once test is complete</h2>
+<h3>Keep dev tools closed until test complete for better time stamps</h3>
+</body>
+</html>

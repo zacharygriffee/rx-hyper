@@ -1,0 +1,37 @@
+{
+  "name": "rx-hyper",
+  "type": "module",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "index.js",
+  "author": "Zachary Eric Griffee",
+  "description": "RxJS wrappers for holepunch hyper tools",
+  "scripts": {
+    "test": "node ./test.js",
+    "compile-docs": "node ./compile-docs.js",
+    "bundle": "node ./bundle.js"
+  },
+  "peerDependencies": {
+    "awilix": "^10.0.1",
+    "b4a": "^1.6.6",
+    "compact-encoding": "^2.13.0",
+    "corestore": "^6.16.2",
+    "hypercore": "^10.32.8",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-terser": "^0.4.4",
+    "awilix": "^10.0.1",
+    "b4a": "^1.6.6",
+    "bring-your-own-storage-utilities": "^0.0.1321",
+    "brittle": "^3.4.0",
+    "corestore": "^6.16.2",
+    "hypercore": "^10.32.8",
+    "jsdoc-to-markdown": "^8.0.1",
+    "localdrive": "^1.11.4",
+    "random-access-memory": "^6.2.0",
+    "rxjs": "^7.8.1",
+    "streamx": "^2.15.8"
+  }
+}
