@@ -21,7 +21,7 @@ Planned to extend
   - Take all existing chunk objects and combine them into one object 
   - Options to go top bottom or bottom top
 
-## [API Documentation](docs/api.md)
+## [API Documentation](https://github.com/zacharygriffee/rx-hyper/blob/master/docs/api.md)
 
 ## Installation
 

@@ -1,11 +1,12 @@
 {
   "name": "rx-hyper",
   "type": "module",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "license": "MIT",
   "main": "index.js",
   "author": "Zachary Eric Griffee",
   "description": "RxJS wrappers for holepunch hyper tools",
+  "homepage": "https://github.com/zacharygriffee/rx-hyper#",
   "scripts": {
     "test": "node ./test.js",
     "compile-docs": "node ./compile-docs.js",
