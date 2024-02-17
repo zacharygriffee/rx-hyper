@@ -3,6 +3,16 @@
 ### RxJS wrappers for holepunch tools
 #### https://docs.holepunch.to/
 
+---
+---
+
+### `!! Alpha  Stage !!`
+
+At this moment, the library is very volatile and subject to drastic changes.
+
+---
+---
+
 Current support status
 - [x] Hypercore
 - [x] Corestore

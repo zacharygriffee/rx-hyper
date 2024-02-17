@@ -1,7 +1,7 @@
 {
   "name": "rx-hyper",
   "type": "module",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "license": "MIT",
   "main": "index.js",
   "author": "Zachary Eric Griffee",
@@ -33,6 +33,7 @@
     "localdrive": "^1.11.4",
     "random-access-memory": "^6.2.0",
     "rxjs": "^7.8.1",
+    "simplified-awilix": "^0.1.0",
     "streamx": "^2.15.8"
   }
 }
