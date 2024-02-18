@@ -1,7 +1,7 @@
 {
   "name": "rx-hyper",
   "type": "module",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "license": "MIT",
   "main": "index.js",
   "author": "Zachary Eric Griffee",
@@ -35,5 +35,8 @@
     "rxjs": "^7.8.1",
     "simplified-awilix": "^0.1.0",
     "streamx": "^2.15.8"
+  },
+  "dependencies": {
+    "dependency-staging": "^0.0.2"
   }
 }
